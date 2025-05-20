@@ -14,7 +14,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import InfoIcon from '@mui/icons-material/Info';
-import { useLocation,Link } from 'react-router-dom';
+import { useLocation,Link,useNavigate } from 'react-router-dom';
+import LogoutIcon from '@mui/icons-material/Logout';
+import AxiosInstance from './forms/AxiosInstance'
+
 
 
 const drawerWidth = 240;
@@ -23,6 +26,17 @@ export default function Navbar(p) {
     const {content} = p
     const location = useLocation() // Get the current pathname
     const path = location.pathname
+    const navigate=useNavigate()
+
+    const logOutUser = () => {
+      AxiosInstance.post(`logout/`,{
+
+      })
+      .then(()=>{
+        localStorage.removeItem('token')
+        navigate('/')
+      })
+    }
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -60,6 +74,15 @@ export default function Navbar(p) {
                     <InfoIcon /> 
                   </ListItemIcon>
                   <ListItemText primary={'About'} />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem key={3} disablePadding>
+                  <ListItemButton onClick={logOutUser}>
+                  <ListItemIcon>
+                    <LogoutIcon /> 
+                  </ListItemIcon>
+                  <ListItemText primary={'Logout'} />
                 </ListItemButton>
               </ListItem>
             

@@ -1,5 +1,5 @@
 import axios from 'axios'
-const Baseurl = ' http://127.0.0.1:8000/'
+const Baseurl = 'http://127.0.0.1:8000/'
 const AxiosInstance = axios.create({
     baseURL:Baseurl,
     timeout:5000,
@@ -17,9 +17,9 @@ AxiosInstance.interceptors.request.use(
         if(token){
             config.headers.Authorization = `Token ${token}` 
         }
-        // else{
-        //    config.headers.Authorization = `` // still enable us to request when we log in or when we don't need a register and still gett the correct response
-        // }
+        else{
+        config.headers.Authorization = ``  // still enable us to request when we log in or when we don't need a register and still gett the correct response
+        }
         return config;
     },
     (error) => {
@@ -34,11 +34,12 @@ AxiosInstance.interceptors.response.use(
     (error) => {
         if(error.response && error.response.status === 401){
             localStorage.removeItem('token')
-            window.location.href = '/'
         }
     }
 
 )
 
 export default AxiosInstance
+
+
 

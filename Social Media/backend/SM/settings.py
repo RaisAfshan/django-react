@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'users',
     'rest_framework',
     'corsheaders',
-    'knox'
+    'knox',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -64,15 +65,13 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
-AUTHENTICATION_BACKENDS = {
-    'users.auth_backend.EmailAuthBackend'
-}
+
 ROOT_URLCONF = "SM.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR/"template"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -120,6 +119,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.environ.get("AA_EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("AA_EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+
+AUTHENTICATION_BACKENDS = {
+    # 'users.auth_backend.EmailAuthBackend',
+    "django.contrib.auth.backends.ModelBackend",
+
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

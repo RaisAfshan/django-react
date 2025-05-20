@@ -6,10 +6,14 @@ import MyButtons from './forms/MyButtons'
 import {Link, useNavigate} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import AxiosInstance from './forms/AxiosInstance'
+import Message from './Message'
+import { useState } from 'react'
+
 
 
 const Login=()=>{
      const navigate=useNavigate()
+     const [ShowMessage, setShowMessage] = useState(false)
      const { handleSubmit, control } = useForm();
 
      const submission = (data)=>{
@@ -24,6 +28,7 @@ const Login=()=>{
             navigate(`/home`)
         })
         .catch((error)=>{
+             setShowMessage(true)
             console.log('error---> ',error)
         })
     }
@@ -32,6 +37,7 @@ const Login=()=>{
 
     return(
         <div className={"myBackground"}>
+            {ShowMessage ? <Message text={"Login has failed, please try again, or reset your password"} color={'#EC5A76'}/> : null}
              <form onSubmit={handleSubmit(submission)}>
             <Box className={"whiteBox"}>
                 <Box className={"itemBox"}>
@@ -50,8 +56,9 @@ const Login=()=>{
                     <MyButtons label={"Sign in"}  type={"submit"} />
                 </Box>
 
-                <Box className={'itemBox'}>
+                <Box className={'itemBox'} sx={{flexDirection:'column'}} gap={1}>
                     <Link to="/register"> No account yet? Please register!</Link>
+                    <Link to="/request/password_reset"> Password forgotten? click here!</Link>
                 </Box>
                  
             </Box>
