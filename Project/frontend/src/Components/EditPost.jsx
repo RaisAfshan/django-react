@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import axiosInstance from "./AxiosInstance";
 import {Container,Row,Col,Form,Button,Spinner,Alert,Image,} from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -33,7 +33,7 @@ const EditPost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/postBlog/${id}/`);
+        const res = await axiosInstance.get(`postBlog/${id}/`);
         setInitialValues({
           title: res.data.title,
           caption: res.data.caption,
@@ -58,7 +58,7 @@ const EditPost = () => {
         formData.append("image", values.image);
       }
 
-      await axios.put(`http://127.0.0.1:8000/postBlog/${id}/`, formData, {
+      await axiosInstance.put(`postBlog/${id}/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -180,7 +180,7 @@ const EditPost = () => {
 
             {/* Submit Button */}
             <div className="text-center">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="btn-grad">
                 {isSubmitting ? (
                   <>
                     <Spinner animation="border" size="sm" className="me-2" />

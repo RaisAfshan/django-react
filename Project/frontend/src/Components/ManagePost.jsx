@@ -3,8 +3,10 @@ import axios from "axios";
 import { Table, Container, Alert, Spinner, Image, Card } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "./AxiosInstance";
+
 
 const ManagePost = () => {
   const [data, setData] = useState([]);
@@ -14,7 +16,7 @@ const ManagePost = () => {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/postBlog/`);
+      const res = await axiosInstance.get(`myposts/`);
       setData(res.data);
     } catch (err) {
       console.error(err);
@@ -24,17 +26,20 @@ const ManagePost = () => {
     }
   };
 
-  const handledelete = async (id) =>{
-    if(!window.confirm("Are you sure you want to delete the post?"))return;
-     try{
-      await axios.delete(`http://127.0.0.1:8000/postBlog/${id}/`);
-      setData(prevData => prevData.filter(post=>post.id!==id));
+  const handledelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete the post?")) return;
+    try {
+      await axios.delete(`http://127.0.0.1:8000/postBlog/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      setData((prevData) => prevData.filter((post) => post.id !== id));
       alert("Post deleted successfully.");
-     }catch(err){
-        console.error("Delete error",err);
-        alert("Failed to delete post.");
-     }
-
+    } catch (err) {
+      console.error("Delete error", err);
+      alert("Failed to delete post.");
+    }
   };
 
   useEffect(() => {
@@ -88,7 +93,7 @@ const ManagePost = () => {
                     </td>
                     <td>
                       <Image
-                        src={post.image}
+                        src={`http://127.0.0.1:8000${post.image}`} 
                         alt={post.title}
                         style={{
                           width: "100px",
@@ -100,12 +105,16 @@ const ManagePost = () => {
                     </td>
                     <td>
                       <Link to={`/editpost/${post.id}`}>
-                          <IconButton aria-label="edit" color="primary">
-                        <EditIcon />
-                      </IconButton>
+                        <IconButton aria-label="edit" color="primary">
+                          <EditIcon />
+                        </IconButton>
                       </Link>
-                
-                       <IconButton aria-label="delete" color="error" onClick={()=>handledelete(post.id)}>
+
+                      <IconButton
+                        aria-label="delete"
+                        color="error"
+                        onClick={() => handledelete(post.id)}
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </td>

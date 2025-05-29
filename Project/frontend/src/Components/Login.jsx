@@ -1,16 +1,40 @@
 import React, { useState } from "react";
-import { Card, Form, Button, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Card, Form, Button, Row, Col, Container } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import * as formik from "formik";
+import * as yup from "yup";
+import axios from "axios";
+import './about.css';
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { Formik } = formik;
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  const schema = yup.object().shape({
+    username: yup.string().required("Username is required"),
+    password: yup.string().required("Password is required"),
+  });
+  // const [isLoading, setIsLoading] = useState(false);
   // const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleLogin = async (values) => {
+     try {
+    const response = await axios.post("http://localhost:8000/api/token/", {
+      username: values.username,
+      password: values.password,
+    });
+      console.log(response.data);
+
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
+      navigate("/home");
+      setMessage("Login successful!");
+    } catch (error) {
+      setMessage(
+        "Login failed: " + (error.response?.data?.detail || "Unknown error")
+      );
+    }
   };
 
   return (
@@ -24,132 +48,72 @@ export default function Login() {
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
-      <div className="">
-        <Card
-          className="shadow-lg border-0"
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "20px",
-            width: "400px",
-            maxWidth: "90vw",
-          }}
-        >
+      <div className="" style={{minWidth:"40vh", }}>
+        <Card className="boder-0 shadow" style={{borderRadius:"20px"}}>
           <Card.Body className="p-5">
-            <div className="text-center mb-4">
+            <div className="text-center ">
               <h2 className="fw-bold text-dark mb-2">Welcome Back</h2>
               <p className="text-muted">Please sign in to your account</p>
+              <h4 className="fw-bold text-dark"> Login </h4>
             </div>
 
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-4" controlId="username">
-                <Form.Label className="fw-semibold text-dark">
-                  Username
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  size="lg"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                  required
-                  style={{
-                    borderRadius: "12px",
-                    border: "2px solid #e9ecef",
-                    transition: "all 0.3s ease",
+            
+                <Formik
+                  validationSchema={schema}
+                  onSubmit={handleLogin}
+                  initialValues={{
+                    username: "",
+                    password: "",
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#667eea";
-                    e.target.style.boxShadow = "0 0 0 0.2rem  #16d9e3 0%";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#e9ecef";
-                    e.target.style.boxShadow = "none";
-                  }}
-                />
-              </Form.Group>
+                >
+                  {({
+                    handleSubmit,
+                    handleChange,
+                    values,
+                    touched,
+                    errors,
+                  }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                      <Form.Group controlId="loginUsername">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="username"
+                          value={values.username}
+                          onChange={handleChange}
+                          isInvalid={!!errors.username}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.username}
+                        </Form.Control.Feedback>
+                      </Form.Group>
 
-              <Form.Group className="mb-4" controlId="password">
-                <Form.Label className="fw-semibold text-dark">
-                  Password
-                </Form.Label>
-                <Form.Control
-                  type="password"
-                  size="lg"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  style={{
-                    borderRadius: "12px",
-                    border: "2px solid #e9ecef",
-                    transition: "all 0.3s ease",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "#667eea";
-                    e.target.style.boxShadow = "0 0 0 0.2rem  #16d9e3 0%";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "#e9ecef";
-                    e.target.style.boxShadow = "none";
-                  }}
-                />
-              </Form.Group>
+                      <Form.Group controlId="loginPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          name="password"
+                          value={values.password}
+                          onChange={handleChange}
+                          isInvalid={!!errors.password}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {errors.password}
+                        </Form.Control.Feedback>
+                      </Form.Group>
 
-              {/* <Form.Group className="mb-4" controlId="rememberMe">
-                <Form.Check
-                  type="checkbox"
-                  label="Remember me"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="text-muted"
-                />
-              </Form.Group> */}
+                      <Button type="submit" className="mt-3 w-100 btn-grad">
+                        Login
+                      </Button>
+                    </Form>
+                  )}
+                </Formik>
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-100 text-white fw-semibold"
-                disabled={isLoading}
-                style={{
-                  background:
-                    "radial-gradient(circle 248px at center, #16d9e3 0%, #30c7ec 47%, #46aef7 100%)",
-                  borderRadius: "12px",
-                  border: "none",
-                  padding: "12px",
-                  transition: "all 0.3s ease",
-                  transform: isLoading ? "scale(0.98)" : "scale(1)",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading) {
-                    e.target.style.transform = "scale(1.02)";
-                    e.target.style.boxShadow = "0 8px 25px  #16d9e3 0%";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoading) {
-                    e.target.style.transform = "scale(1)";
-                    e.target.style.boxShadow = "none";
-                  }
-                }}
-              >
-                {isLoading ? (
-                  <>
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                      className="me-2"
-                    />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign In"
+                {message && (
+                  <div className="mt-3 text-center text-danger">{message}</div>
                 )}
-              </Button>
-            </Form>
+            
+          
 
             {/* <div className="text-center mt-4">
               <a href="#" className="text-decoration-none" 

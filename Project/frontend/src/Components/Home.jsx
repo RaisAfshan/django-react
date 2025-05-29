@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { Container, Row, Col, Card, Badge, Alert, Spinner } from 'react-bootstrap';
 import SendIcon from '@mui/icons-material/Send';
+import axiosInstance from "./AxiosInstance";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -11,7 +12,7 @@ const Home = () => {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/postBlog/`);
+      const res = await axiosInstance.get(`postBlog/`);
       setData(res.data);
     } catch (err) {
       console.error(err);
@@ -68,9 +69,10 @@ const Home = () => {
                         <SendIcon/>
 
                   </div>
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <Card.Title className="h3 mb-0 text-primary fw-bold">{post.title}</Card.Title>
-                  </div>
+                  {/* <div className="d-flex justify-content-between align-items-start mb-3"> */}
+                    <Card.Title className="h3 mb-0 text-primary fw-bold mb-2">{post.title}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">@{post.author.first_name}{post.author.last_name}</Card.Subtitle>
+                  {/* </div> */}
                  
                   <Card.Text className="text-muted fs-5 lh-base mb-0">{post.caption}</Card.Text>
                 </Card.Body>

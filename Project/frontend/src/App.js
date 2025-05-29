@@ -10,6 +10,7 @@ import EditPost from "./Components/EditPost";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Signup from "./Components/Signup";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 
 
@@ -29,11 +30,11 @@ const App =()=>{
     :
       <Header content={
         <Routes>
-        <Route path="/home" element={<Home/>}/>
-        <Route path="/about" element={<About/>}/>
-        <Route path="/addpost" element={<AddPost/>}/>
-        <Route path="/managepost" element={<ManagePost/>}/>
-        <Route path="/editpost/:id" element={<EditPost/>}/>
+        <Route path="/home" element={  <ProtectedRoute><Home/></ProtectedRoute>}/>
+        <Route path="/about" element={<ProtectedRoute><About/></ProtectedRoute>}/>
+        <Route path="/addpost" element={<ProtectedRoute><AddPost/></ProtectedRoute>}/>
+        <Route path="/managepost" element={<ProtectedRoute><ManagePost/></ProtectedRoute>}/>
+        <Route path="/editpost/:id" element={<ProtectedRoute><EditPost/></ProtectedRoute>}/>
       </Routes>
       
      

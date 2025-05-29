@@ -13,16 +13,43 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import HomeFilledIcon from "@mui/icons-material/HomeFilled";
 import InfoIcon from "@mui/icons-material/Info";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import Footer from "./Footer";
-import { red } from "@mui/material/colors";
+import Avatar from "@mui/material/Avatar";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useState } from "react";
+import axiosInstance from "./AxiosInstance";
+import { useEffect } from "react";
 
 const drawerWidth = 240;
 
 export default function Header(props) {
   const { content } = props;
+  const navigate = useNavigate();
+  const [user, setUser] = useState({});
+
+  const fetchUser = async () => {
+    try {
+      const response = await axiosInstance.get("user/me/");
+      setUser(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(()=>{
+    fetchUser();
+  },[])
+  
+  console.log(user)
+
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    navigate("/");
+  };
   return (
     <Box
       sx={{
@@ -37,13 +64,7 @@ export default function Header(props) {
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
         <Toolbar>
-          <Typography
-            noWrap
-            component="div"
-            variant="h5"
-            fontWeight=""
-            
-          >
+          <Typography noWrap component="div" variant="h5" fontWeight="">
             ConnectHub
           </Typography>
         </Toolbar>
@@ -65,6 +86,15 @@ export default function Header(props) {
         <Toolbar />
         <Divider />
         <List>
+          <ListItem key={6} alignItems="flex-start">
+            <Avatar
+              alt={user.username}
+              src="https://images.unsplash.com/photo-1667821399946-ae0bce59aa22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHByb2ZpbGUlMjBlbW9naXN8ZW58MHx8MHx8fDA%3D"
+            />
+            <Typography variant="body1" component="span" sx={{ ml: 2 }}>
+              {user.username}
+            </Typography>
+          </ListItem>
           <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/home">
               <ListItemIcon>
@@ -97,6 +127,15 @@ export default function Header(props) {
                 <InfoIcon />
               </ListItemIcon>
               <ListItemText primary={"About"} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem key={5} disablePadding>
+            <ListItemButton onClick={logout}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Logout"} />
             </ListItemButton>
           </ListItem>
         </List>
